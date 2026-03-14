@@ -1,0 +1,441 @@
+/* Features CSS - Styles for all 4 tools */
+
+.feature-wrapper {
+  animation: fadeIn 0.4s ease-out;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel {
+  padding: 24px;
+}
+
+/* Common Layouts */
+.calc-layout, .bmi-layout, .tags-layout {
+  display: flex;
+  gap: 24px;
+  flex: 1;
+}
+
+.calc-input-section, .bmi-input-section, .tags-input-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.calc-result-section, .bmi-result-section, .tags-result-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+/* Utilities */
+.mt-4 { margin-top: 16px; }
+.mt-6 { margin-top: 24px; }
+.mt-8 { margin-top: 32px; }
+.mb-2 { margin-bottom: 8px; }
+.w-full { width: 100%; }
+.text-left { text-align: left; }
+.input-row {
+  display: flex;
+  gap: 16px;
+}
+.input-row > .input-group {
+  flex: 1;
+}
+
+/* Price Dashboard */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.cards-grid.gold-split {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.price-card {
+  background: linear-gradient(145deg, rgba(45, 51, 59, 0.7) 0%, rgba(33, 38, 45, 0.9) 100%);
+  border: 1px solid var(--surface-border);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.price-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.card-header h3 {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.symbol {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.symbol.gold { background: rgba(210, 153, 34, 0.2); color: #e3b341; }
+.symbol.silver { background: rgba(139, 148, 158, 0.2); color: #cdd9e5; }
+.symbol.usd { background: rgba(46, 160, 67, 0.2); color: #3fb950; }
+
+.current-price {
+  font-size: 2.2rem;
+  margin-bottom: 8px;
+  font-variant-numeric: tabular-nums;
+  color: white;
+}
+
+.price-change {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.price-change.positive {
+  background: rgba(46, 160, 67, 0.15);
+  color: #3fb950;
+}
+
+.price-change.negative {
+  background: rgba(248, 81, 73, 0.15);
+  color: #ff7b72;
+}
+
+.mini-chart {
+  margin-top: 20px;
+  height: 40px;
+}
+
+.sparkline { width: 100%; height: 100%; }
+.sparkline.up { stroke: #3fb950; }
+.sparkline.down { stroke: #ff7b72; }
+
+/* Dashboard Chart mock */
+.mock-chart-large {
+  margin-top: 24px;
+  height: 150px;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  padding-top: 10px;
+}
+
+.chart-bars {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  height: 100%;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.bar {
+  flex: 1;
+  background: linear-gradient(to top, rgba(88, 166, 255, 0.2), rgba(88, 166, 255, 0.8));
+  border-radius: 4px 4px 0 0;
+  animation: growUp 1s ease-out;
+}
+
+@keyframes growUp {
+  from { transform: scaleY(0); transform-origin: bottom; }
+  to { transform: scaleY(1); transform-origin: bottom; }
+}
+
+/* Toggle Group for Interest Calc */
+.toggle-group {
+  display: flex;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  padding: 4px;
+  margin-bottom: 24px;
+}
+
+.toggle-btn {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+  font-weight: 500;
+}
+
+.toggle-btn.active {
+  background: var(--accent-primary);
+  color: white;
+  box-shadow: 0 2px 10px rgba(88, 166, 255, 0.3);
+}
+
+.result-metric h2 {
+  font-size: 3rem;
+  color: var(--accent-success);
+  margin: 12px 0;
+  text-shadow: 0 0 20px rgba(46, 160, 67, 0.4);
+}
+
+.result-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  margin-top: 24px;
+}
+
+.breakdown-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+.breakdown-item.accent {
+  background: rgba(46, 160, 67, 0.1);
+  color: #3fb950;
+}
+
+/* BMI Slider */
+.slider-group {
+  width: 100%;
+}
+
+.slider-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.slider-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--accent-primary);
+}
+
+.slider-value .unit {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-weight: normal;
+}
+
+.premium-slider {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  outline: none;
+}
+
+.premium-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--accent-primary);
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(88, 166, 255, 0.6);
+  transition: 0.2s;
+}
+
+.premium-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+/* BMI Ring */
+.bmi-ring {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: conic-gradient(var(--ring-color) var(--progress), rgba(255, 255, 255, 0.1) 0%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+  padding: 10px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+  transition: background 1s ease;
+}
+
+.bmi-circle {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.bmi-circle h2 {
+  font-size: 3rem;
+  margin: 0;
+  color: white;
+}
+
+.bmi-status h3 {
+  font-size: 1.8rem;
+  margin-bottom: 16px;
+}
+
+.bmi-info {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  max-width: 80%;
+}
+
+/* Insta Tags */
+.tags-textarea {
+  resize: none;
+  width: 100%;
+}
+
+.generate-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.spin {
+  animation: rotate 1s linear infinite;
+}
+
+@keyframes rotate {
+  100% { transform: rotate(360deg); }
+}
+
+.tags-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.copy-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: 0.3s;
+}
+
+.copy-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.copy-btn.success {
+  background: var(--accent-success);
+}
+
+.tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  width: 100%;
+  justify-content: center;
+}
+
+.hashtag {
+  background: linear-gradient(to right, rgba(138, 43, 226, 0.15), rgba(88, 166, 255, 0.15));
+  border: 1px solid rgba(138, 43, 226, 0.3);
+  color: #e6edf3;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: 0.3s;
+}
+
+.hashtag:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(to right, rgba(138, 43, 226, 0.3), rgba(88, 166, 255, 0.3));
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: var(--text-secondary);
+  gap: 16px;
+  opacity: 0.7;
+}
+
+.empty-icon {
+  font-size: 4rem;
+}
+
+.tags-string-view {
+  margin-top: 24px;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  width: 100%;
+}
+
+.tags-string-view p {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  word-wrap: break-word;
+  user-select: all;
+}
+
+@media (max-width: 768px) {
+  .cards-grid, .cards-grid.gold-split {
+    grid-template-columns: 1fr;
+  }
+  
+  .calc-layout, .bmi-layout, .tags-layout {
+    flex-direction: column;
+  }
+  
+  .input-row {
+    flex-direction: column;
+  }
+  
+  .tool-header h1 {
+    font-size: 2rem;
+  }
+}
+

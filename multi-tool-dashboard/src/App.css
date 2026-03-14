@@ -1,0 +1,248 @@
+.app-layout {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.sidebar {
+  width: 280px;
+  margin: 16px;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 40px;
+}
+
+.logo-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  box-shadow: 0 0 15px rgba(88, 166, 255, 0.4);
+}
+
+.sidebar-header h2 {
+  font-size: 1.5rem;
+  background: linear-gradient(to right, #fff, #a5c8ff);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+}
+
+.nav-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+}
+
+.nav-btn.active {
+  background: rgba(88, 166, 255, 0.1);
+  color: var(--accent-primary);
+  border-right: 3px solid var(--accent-primary);
+}
+
+.nav-icon {
+  opacity: 0.7;
+}
+
+.nav-btn.active .nav-icon {
+  opacity: 1;
+  color: var(--accent-primary);
+}
+
+.sidebar-footer {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  text-align: center;
+  opacity: 0.5;
+}
+
+.main-content {
+  flex: 1;
+  padding: 16px 16px 16px 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.feature-container {
+  flex: 1;
+  background: var(--surface);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--surface-border);
+  border-radius: 16px;
+  padding: 40px;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* Right Sidebar for Ads */
+.ads-sidebar {
+  width: 320px;
+  margin: 16px 16px 16px 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ad-box {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--text-secondary);
+  border: 1px dashed var(--surface-border);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.ad-placeholder {
+  opacity: 0.5;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+}
+
+/* Common UI Elements for Tools */
+.tool-header {
+  margin-bottom: 32px;
+}
+
+.tool-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 8px;
+  background: linear-gradient(to right, #fff, #a5c8ff);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+.tool-header p {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.input-group label {
+  font-weight: 500;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+}
+
+.premium-input {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--surface-border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  color: white;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  transition: all 0.2s;
+  outline: none;
+}
+
+.premium-input:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.2);
+}
+
+.premium-button {
+  background: linear-gradient(135deg, var(--accent-primary), #3a75c4);
+  color: white;
+  border: none;
+  padding: 14px 24px;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-family: var(--font-body);
+}
+
+.premium-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(88, 166, 255, 0.4);
+}
+
+@media (max-width: 768px) {
+  .app-layout {
+    flex-direction: column;
+  }
+  
+  .sidebar {
+    width: auto;
+    margin: 16px;
+    padding: 16px;
+    flex-direction: row;
+    overflow-x: auto;
+  }
+  
+  .sidebar-header {
+    margin-bottom: 0;
+    margin-right: 24px;
+  }
+  
+  .sidebar-header h2 {
+    display: none;
+  }
+  
+  .sidebar-nav {
+    flex-direction: row;
+    align-items: center;
+  }
+  
+  .nav-btn span {
+    display: none;
+  }
+  
+  .sidebar-footer {
+    display: none;
+  }
+  
+  .main-content {
+    padding: 0 16px 16px 16px;
+  }
+  
+  .ads-sidebar {
+    width: auto;
+    height: 100px;
+    margin: 0 16px 16px 16px;
+  }
+}
+
