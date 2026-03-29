@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar';
 import PriceDashboard from './features/PriceDashboard';
 import InterestCalculator from './features/InterestCalculator';
@@ -12,6 +12,31 @@ import './App.css';
 
 function App() {
   const [currentFeature, setCurrentFeature] = useState('dashboard');
+  const [isDarkMode, setIsDarkMode] = useState(true);
+
+  // Initialize theme from localStorage and apply to document
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const initialDarkMode = savedTheme ? savedTheme === 'dark' : prefersDark;
+    
+    setIsDarkMode(initialDarkMode);
+    applyTheme(initialDarkMode);
+  }, []);
+
+  // Update theme when isDarkMode changes
+  useEffect(() => {
+    applyTheme(isDarkMode);
+    localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+  }, [isDarkMode]);
+
+  const applyTheme = (darkMode) => {
+    if (darkMode) {
+      document.body.classList.remove('light-mode');
+    } else {
+      document.body.classList.add('light-mode');
+    }
+  };
 
   const renderFeature = () => {
     switch(currentFeature) {
@@ -29,7 +54,12 @@ function App() {
 
   return (
     <div className="app-layout">
-      <Sidebar currentFeature={currentFeature} setCurrentFeature={setCurrentFeature} />
+      <Sidebar 
+        currentFeature={currentFeature} 
+        setCurrentFeature={setCurrentFeature}
+        isDarkMode={isDarkMode}
+        setIsDarkMode={setIsDarkMode}
+      />
       <main className="main-content">
         <div className="feature-container animate-fade-in" key={currentFeature}>
           {renderFeature()}
