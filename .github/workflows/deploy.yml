@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      pages: write
+      id-token: write
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
@@ -33,8 +35,8 @@ jobs:
         run: npm run build
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+        uses: JamesIves/github-pages-deploy-action@v4.4.3
         with:
-          publish_dir: ./multi-tool-dashboard/dist
-          publish_branch: gh-pages
+          branch: gh-pages
+          folder: multi-tool-dashboard/dist
           github_token: ${{ secrets.GITHUB_TOKEN }}
