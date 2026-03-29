@@ -1,7 +1,8 @@
 import React from 'react';
 import { LayoutDashboard, Percent, Scale, Hash, Home, QrCode, ImageDown, Dices } from 'lucide-react';
+import ThemeToggle from './ThemeToggle';
 
-const Sidebar = ({ currentFeature, setCurrentFeature }) => {
+const Sidebar = ({ currentFeature, setCurrentFeature, isDarkMode, setIsDarkMode }) => {
   const navItems = [
     { id: 'dashboard', label: 'Price Dashboard', icon: LayoutDashboard },
     { id: 'interest', label: 'Interest Calc', icon: Percent },
@@ -36,6 +37,8 @@ const Sidebar = ({ currentFeature, setCurrentFeature }) => {
           );
         })}
       </nav>
+      
+      <ThemeToggle isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
       
       <div className="sidebar-footer">
         <p>7yaTools Premium</p>
