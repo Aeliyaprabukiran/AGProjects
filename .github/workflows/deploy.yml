@@ -34,6 +34,9 @@ jobs:
         working-directory: ./multi-tool-dashboard
         run: npm run build
 
+      - name: Disable Jekyll
+        run: touch multi-tool-dashboard/dist/.nojekyll
+
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4.4.3
         with:
