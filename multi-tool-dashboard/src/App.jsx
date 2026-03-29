@@ -5,6 +5,9 @@ import InterestCalculator from './features/InterestCalculator';
 import HomeLoanCalculator from './features/HomeLoanCalculator';
 import BmiCalculator from './features/BmiCalculator';
 import InstaTags from './features/InstaTags';
+import QrGenerator from './features/QrGenerator';
+import ImageCompressor from './features/ImageCompressor';
+import RandomPicker from './features/RandomPicker';
 import './App.css';
 
 function App() {
@@ -17,6 +20,9 @@ function App() {
       case 'homeloan': return <HomeLoanCalculator />;
       case 'bmi': return <BmiCalculator />;
       case 'tags': return <InstaTags />;
+      case 'qr': return <QrGenerator />;
+      case 'compress': return <ImageCompressor />;
+      case 'random': return <RandomPicker />;
       default: return <PriceDashboard />;
     }
   };

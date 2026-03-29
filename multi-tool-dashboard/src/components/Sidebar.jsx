@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, Percent, Scale, Hash, Home } from 'lucide-react';
+import { LayoutDashboard, Percent, Scale, Hash, Home, QrCode, ImageDown, Dices } from 'lucide-react';
 
 const Sidebar = ({ currentFeature, setCurrentFeature }) => {
   const navItems = [
@@ -7,7 +7,10 @@ const Sidebar = ({ currentFeature, setCurrentFeature }) => {
     { id: 'interest', label: 'Interest Calc', icon: Percent },
     { id: 'homeloan', label: 'Home Loan Calc', icon: Home },
     { id: 'bmi', label: 'BMI Calculator', icon: Scale },
-    { id: 'tags', label: 'Insta Tags', icon: Hash }
+    { id: 'tags', label: 'Insta Tags', icon: Hash },
+    { id: 'qr', label: 'QR Generator', icon: QrCode },
+    { id: 'compress', label: 'Image Compress', icon: ImageDown },
+    { id: 'random', label: 'Random Picker', icon: Dices }
   ];
 
   return (
