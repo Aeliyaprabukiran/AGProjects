@@ -2008,3 +2008,58 @@
   50% { transform: scale(1.02); }
   100% { transform: scale(1); background: rgba(255,220,0,0.1); }
 }
+
+/* Light Mode - Jewellery Calculator */
+body.light-mode .jc-input-group label {
+  color: #0a0e27;
+}
+
+body.light-mode .jc-input-group input,
+body.light-mode .jc-input-group select {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  color: #0a0e27;
+}
+
+body.light-mode .jc-input-group input::placeholder {
+  color: #656d76;
+}
+
+body.light-mode .jc-input-group input:focus,
+body.light-mode .jc-input-group select:focus {
+  border-color: #0969da;
+  box-shadow: 0 0 0 2px rgba(9, 105, 218, 0.1);
+}
+
+body.light-mode .jc-toggle-group {
+  background: rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .jc-toggle-group button {
+  color: #4a5568;
+}
+
+body.light-mode .jc-toggle-group button.active {
+  background: rgba(9, 105, 218, 0.1);
+  color: #0969da;
+}
+
+body.light-mode .jc-header-flex {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode .jc-header-flex h3 {
+  color: #0a0e27;
+}
+
+body.light-mode .jc-reset-btn {
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  color: #4a5568;
+  background: rgba(0, 0, 0, 0.02);
+}
+
+body.light-mode .jc-reset-btn:hover {
+  background: rgba(0, 0, 0, 0.08);
+  color: #0a0e27;
+}

@@ -29,11 +29,8 @@
 
 .sidebar-header h2 {
   font-size: 1.5rem;
-  background: linear-gradient(to right, #fff, #a5c8ff);
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
+  color: #58a6ff;
+  background: none;
 }
 
 .sidebar-nav {
@@ -140,11 +137,8 @@
 .tool-header h1 {
   font-size: 2.5rem;
   margin-bottom: 8px;
-  background: linear-gradient(to right, #fff, #a5c8ff);
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
+  color: #58a6ff;
+  background: none;
 }
 
 .tool-header p {
@@ -244,5 +238,55 @@
     height: 100px;
     margin: 0 16px 16px 16px;
   }
+}
+
+/* Light Mode Styles */
+body.light-mode .sidebar-header h2 {
+  color: #0969da;
+  background: none;
+  -webkit-text-fill-color: unset;
+}
+
+body.light-mode .tool-header h1 {
+  color: #0969da;
+  background: none;
+  -webkit-text-fill-color: unset;
+}
+
+body.light-mode .nav-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--text-primary);
+}
+
+body.light-mode .nav-btn.active {
+  background: rgba(9, 105, 218, 0.08);
+  color: var(--accent-primary);
+}
+
+body.light-mode .premium-input {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  color: #0a0e27;
+}
+
+body.light-mode .premium-input::placeholder {
+  color: #656d76;
+}
+
+body.light-mode .premium-input:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 2px rgba(9, 105, 218, 0.1);
+}
+
+body.light-mode .ad-box {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+body.light-mode .feature-container {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+body.light-mode .logo-circle {
+  box-shadow: 0 0 15px rgba(9, 105, 218, 0.2);
 }
 

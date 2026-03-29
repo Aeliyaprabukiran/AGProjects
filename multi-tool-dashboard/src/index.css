@@ -19,12 +19,12 @@
 }
 
 body.light-mode {
-  --bg-color: #f6f8fa;
-  --bg-gradient: linear-gradient(135deg, #e1e4e8 0%, #ffffff 100%);
-  --surface: rgba(255, 255, 255, 0.85);
-  --surface-border: rgba(0, 0, 0, 0.15);
-  --text-primary: #1f2328;
-  --text-secondary: #656d76;
+  --bg-color: #ffffff;
+  --bg-gradient: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
+  --surface: rgba(255, 255, 255, 0.95);
+  --surface-border: rgba(0, 0, 0, 0.08);
+  --text-primary: #0a0e27;
+  --text-secondary: #4a5568;
   
   --accent-primary: #0969da;
   --accent-secondary: #8250df;
@@ -34,7 +34,8 @@ body.light-mode {
 }
 
 body.light-mode .glass-panel {
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08); /* Needs soft shadow in light mode */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  background: rgba(255, 255, 255, 0.98);
 }
 
 * {
