@@ -1665,3 +1665,346 @@
   .rp-sidebar { width: 100%; max-height: 400px; }
   .rp-list { max-height: 250px; }
 }
+
+/* --- Gold History Table --- */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.gold-history-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  border-radius: 8px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.gold-history-table th {
+  background: rgba(0,0,0,0.4);
+  padding: 16px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  border-bottom: 2px solid rgba(255,255,255,0.1);
+}
+
+.gold-history-table td {
+  padding: 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  color: var(--text-primary);
+  font-size: 1rem;
+}
+
+.gold-history-table tr:last-child td {
+  border-bottom: none;
+}
+
+.gold-history-table tr:hover td {
+  background: rgba(255,255,255,0.05);
+}
+
+.hist-change {
+  margin-left: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.hist-up { color: #2ECC40; }
+.hist-down { color: #FF4136; }
+.hist-flat { color: rgba(255, 255, 255, 0.4); }
+/* ============================================================
+   JEWELLERY CALCULATOR
+   ============================================================ */
+.jc-wrapper {
+  margin-top: 40px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  padding-top: 40px;
+}
+
+.jc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  align-items: flex-start;
+}
+
+@media (max-width: 968px) {
+  .jc-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.jc-controls {
+  display: flex;
+  flex-direction: column;
+}
+
+.jc-header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.jc-header-flex h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.jc-reset-btn {
+  background: none;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: var(--text-secondary);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.jc-reset-btn:hover {
+  background: rgba(255,255,255,0.1);
+  color: var(--text-primary);
+}
+
+.jc-form-group-row {
+  display: flex;
+  gap: 16px;
+}
+
+.jc-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.jc-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.live-badge {
+  background: rgba(46, 204, 64, 0.2);
+  color: #2ECC40;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.jc-input-group label {
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: #f1f1f1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+
+.jc-input-group input, 
+.jc-input-group select {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 12px 16px;
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-size: 1rem;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.jc-input-group input:focus,
+.jc-input-group select:focus {
+  border-color: #FFDC00;
+}
+
+.jc-toggle-group {
+  display: flex;
+  background: rgba(0,0,0,0.4);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+.jc-toggle-group button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+.jc-toggle-group button.active {
+  background: rgba(255, 220, 0, 0.15);
+  color: #FFDC00;
+}
+
+.jc-divider {
+  height: 1px;
+  background: rgba(255,255,255,0.06);
+  margin: 20px 0;
+}
+
+/* --- PREVIEW AREA (The Bill) --- */
+
+.jc-preview-area {
+  display: flex;
+  flex-direction: column;
+}
+
+.jc-bill-card {
+  background: #1E232E; /* Solid base for html2canvas */
+  background-image: linear-gradient(135deg, rgba(255, 220, 0, 0.03) 0%, transparent 100%);
+  border: 1px solid rgba(255, 220, 0, 0.15);
+  border-radius: 16px;
+  padding: 32px;
+  color: #fff;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+}
+
+.jc-bill-header {
+  border-bottom: 2px dashed rgba(255, 255, 255, 0.1);
+  padding-bottom: 20px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.jc-bill-header h1 {
+  font-family: 'Times New Roman', serif;
+  font-size: 1.8rem;
+  color: #FFDC00;
+  margin: 0 0 8px 0;
+  letter-spacing: 1px;
+}
+
+.jc-date {
+  color: rgba(255,255,255,0.5);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.jc-customer {
+  margin: 12px 0 0 0;
+  font-size: 1rem;
+  color: #ddd;
+}
+
+.jc-bill-item-details {
+  background: rgba(0,0,0,0.2);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.jc-item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.jc-item-row:last-child { margin-bottom: 0; }
+.jc-item-row span { color: rgba(255,255,255,0.6); font-size: 0.95rem; }
+.jc-item-row strong { font-size: 1.05rem; }
+
+.jc-bill-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.jc-breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.95rem;
+}
+
+.jc-subtotal-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 12px 0;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  margin: 8px 0;
+}
+
+.jc-grand-total {
+  background: rgba(255, 220, 0, 0.1);
+  border: 1px solid rgba(255, 220, 0, 0.3);
+  padding: 20px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.jc-grand-total span {
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: #FFDC00;
+  font-size: 0.85rem;
+  margin-bottom: 4px;
+}
+
+.jc-grand-total h2 {
+  font-size: 2.8rem;
+  margin: 0;
+  color: #fff;
+  text-shadow: 0 4px 15px rgba(255,220,0,0.3);
+}
+
+.jc-bill-footer {
+  margin-top: 24px;
+  text-align: center;
+  opacity: 0.5;
+  font-size: 0.8rem;
+}
+
+.jc-download-btn {
+  background: rgba(255, 220, 0, 0.1) !important;
+  color: #FFDC00 !important;
+  border: 1px solid rgba(255, 220, 0, 0.2) !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease !important;
+}
+
+.jc-download-btn:hover {
+  background: rgba(255, 220, 0, 0.2) !important;
+  border-color: rgba(255, 220, 0, 0.5) !important;
+  transform: translateY(-2px);
+}
+
+.pulse-total {
+  animation: bg-pulse 0.4s ease-out;
+}
+
+@keyframes bg-pulse {
+  0% { transform: scale(0.98); background: rgba(255,220,0,0.3); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); background: rgba(255,220,0,0.1); }
+}
