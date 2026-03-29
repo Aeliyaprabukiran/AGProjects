@@ -38,4 +38,5 @@ jobs:
         with:
           publish_dir: ./multi-tool-dashboard/dist
           publish_branch: gh-pages
+          node_version: '22'
           github_token: ${{ secrets.GITHUB_TOKEN }}
