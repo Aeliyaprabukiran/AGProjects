@@ -6,12 +6,15 @@ on:
       - main
   workflow_dispatch:
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -19,7 +22,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '24'
           cache: 'npm'
           cache-dependency-path: './multi-tool-dashboard/package-lock.json'
 
@@ -31,9 +34,12 @@ jobs:
         working-directory: ./multi-tool-dashboard
         run: npm run build
 
+      - name: Disable Jekyll
+        run: touch multi-tool-dashboard/dist/.nojekyll
+
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+        uses: JamesIves/github-pages-deploy-action@v4.4.3
         with:
-          publish_dir: ./multi-tool-dashboard/dist
-          publish_branch: gh-pages
+          branch: gh-pages
+          folder: multi-tool-dashboard/dist
           github_token: ${{ secrets.GITHUB_TOKEN }}
