@@ -6,9 +6,6 @@ on:
       - main
   workflow_dispatch:
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -21,7 +18,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '24'
           cache: 'npm'
           cache-dependency-path: './multi-tool-dashboard/package-lock.json'
 
@@ -38,5 +35,4 @@ jobs:
         with:
           publish_dir: ./multi-tool-dashboard/dist
           publish_branch: gh-pages
-          node_version: '22'
           github_token: ${{ secrets.GITHUB_TOKEN }}
