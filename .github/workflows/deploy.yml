@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   build-and-deploy:
@@ -15,18 +19,21 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
+          cache-dependency-path: './multi-tool-dashboard/package-lock.json'
 
       - name: Install dependencies
+        working-directory: ./multi-tool-dashboard
         run: npm ci
 
       - name: Build
+        working-directory: ./multi-tool-dashboard
         run: npm run build
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
-          publish_dir: ./dist
+          publish_dir: ./multi-tool-dashboard/dist
           publish_branch: gh-pages
           github_token: ${{ secrets.GITHUB_TOKEN }}
