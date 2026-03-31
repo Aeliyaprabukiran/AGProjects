@@ -197,19 +197,38 @@
 @media (max-width: 768px) {
   .app-layout {
     flex-direction: column;
+    height: auto;
+    min-height: 100dvh;
+    overflow: visible;
   }
   
   .sidebar {
-    width: auto;
-    margin: 16px;
-    padding: 16px;
+    width: 100%;
+    margin: 0;
+    padding: 12px 16px;
     flex-direction: row;
     overflow-x: auto;
+    overflow-y: visible;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+  }
+  
+  .sidebar::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
   }
   
   .sidebar-header {
     margin-bottom: 0;
-    margin-right: 24px;
+    margin-right: 16px;
   }
   
   .sidebar-header h2 {
@@ -219,9 +238,25 @@
   .sidebar-nav {
     flex-direction: row;
     align-items: center;
+    gap: 8px;
+    width: max-content;
+  }
+  
+  .nav-btn {
+    padding: 10px 14px;
+    border-radius: 8px;
+  }
+  
+  .nav-btn.active {
+    border-right: none;
+    background: rgba(88, 166, 255, 0.15);
   }
   
   .nav-btn span {
+    display: none;
+  }
+
+  .nav-tooltip {
     display: none;
   }
   
@@ -230,7 +265,14 @@
   }
   
   .main-content {
-    padding: 0 16px 16px 16px;
+    padding: 16px;
+    flex: none;
+  }
+
+  .feature-container {
+    padding: 24px 20px;
+    overflow-y: visible;
+    height: auto;
   }
   
   .ads-sidebar {
@@ -290,3 +332,89 @@ body.light-mode .logo-circle {
   box-shadow: 0 0 15px rgba(9, 105, 218, 0.2);
 }
 
+/* ═══════════════════════════════════
+   Drag & Drop Reorder Styles
+   ═══════════════════════════════════ */
+
+/* Wrapper for each nav item — the draggable target */
+.nav-btn-wrapper {
+  border-radius: 12px;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  position: relative;
+}
+
+/* Drag handle (grip icon) */
+.drag-handle {
+  opacity: 0;
+  color: var(--text-secondary);
+  cursor: grab;
+  flex-shrink: 0;
+  transition: opacity 0.2s ease;
+}
+.nav-btn-wrapper:hover .drag-handle {
+  opacity: 0.5;
+}
+.nav-btn-wrapper:hover .drag-handle:hover {
+  opacity: 1;
+}
+
+/* While this item IS being dragged */
+.nav-btn-wrapper.is-dragging {
+  opacity: 0.3;
+  transform: scale(0.95);
+}
+.nav-btn-wrapper.is-dragging .nav-btn {
+  background: rgba(88, 166, 255, 0.05);
+  border: 1px dashed rgba(88, 166, 255, 0.3);
+}
+
+/* Drop target indicator — the item being hovered OVER */
+.nav-btn-wrapper.is-over {
+  transform: translateY(0);
+}
+.nav-btn-wrapper.is-over::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: 16px;
+  right: 16px;
+  height: 3px;
+  background: var(--accent-primary);
+  border-radius: 3px;
+  animation: dropIndicatorPulse 1s ease-in-out infinite;
+}
+
+@keyframes dropIndicatorPulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* nav-btn inside wrapper: fill parent */
+.nav-btn-wrapper .nav-btn {
+  width: 100%;
+}
+
+/* ─── Mobile adjustments ─── */
+@media (max-width: 768px) {
+  .nav-btn-wrapper {
+    display: inline-flex;
+    flex-shrink: 0;
+  }
+  .drag-handle {
+    display: none;
+  }
+  .nav-btn-wrapper.is-over::before {
+    top: 0;
+    left: -3px;
+    right: auto;
+    bottom: 0;
+    width: 3px;
+    height: auto;
+  }
+}
+
+/* Light mode */
+body.light-mode .nav-btn-wrapper.is-dragging .nav-btn {
+  background: rgba(9, 105, 218, 0.05);
+  border-color: rgba(9, 105, 218, 0.2);
+}

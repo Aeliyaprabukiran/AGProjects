@@ -1,362 +1,393 @@
-import React, { useState, useRef } from 'react';
-import { Compare2, Download, Copy, RefreshCw, Eye, EyeOff } from 'lucide-react';
+import React, { useState, useRef, useCallback } from 'react';
+import { GitCompareArrows, Download, Copy, RefreshCw, Upload, ChevronRight, ChevronDown, Check, FileJson, Clipboard } from 'lucide-react';
 
+// ─── Sample JSON for quick testing ───
+const SAMPLE_A = JSON.stringify({
+  name: "Aarav Sharma",
+  age: 28,
+  address: { city: "Chennai", state: "Tamil Nadu", pin: 600001 },
+  skills: ["React", "Node.js", "Python"],
+  experience: 5,
+  active: true,
+  metadata: { created: "2024-01-15", role: "developer" }
+}, null, 2);
+
+const SAMPLE_B = JSON.stringify({
+  name: "Aarav Sharma",
+  age: 29,
+  address: { city: "Bengaluru", state: "Karnataka", pin: 560001 },
+  skills: ["React", "Node.js", "Go"],
+  active: true,
+  salary: 1200000,
+  metadata: { created: "2024-01-15", role: "senior-developer", team: "platform" }
+}, null, 2);
+
+// ─── Diff status constants ───
+const DIFF = { ADDED: 'added', REMOVED: 'removed', MODIFIED: 'modified', UNCHANGED: 'unchanged' };
+
+// ─── Deep compare engine ───
+const deepCompare = (a, b, strictOrder = false) => {
+  const results = [];
+
+  const compare = (valA, valB, path = '$') => {
+    const typeA = valA === null ? 'null' : Array.isArray(valA) ? 'array' : typeof valA;
+    const typeB = valB === null ? 'null' : Array.isArray(valB) ? 'array' : typeof valB;
+
+    // Both undefined (shouldn't happen in normal flow)
+    if (valA === undefined && valB === undefined) return;
+
+    // Added
+    if (valA === undefined) {
+      results.push({ path, status: DIFF.ADDED, valueB: valB, type: typeB });
+      return;
+    }
+
+    // Removed
+    if (valB === undefined) {
+      results.push({ path, status: DIFF.REMOVED, valueA: valA, type: typeA });
+      return;
+    }
+
+    // Type mismatch
+    if (typeA !== typeB) {
+      results.push({ path, status: DIFF.MODIFIED, valueA: valA, valueB: valB, type: 'type-change', typeA, typeB });
+      return;
+    }
+
+    // Primitives + null
+    if (typeA !== 'object' && typeA !== 'array') {
+      if (valA !== valB) {
+        results.push({ path, status: DIFF.MODIFIED, valueA: valA, valueB: valB, type: typeA });
+      }
+      return;
+    }
+
+    // Arrays
+    if (typeA === 'array') {
+      const maxLen = Math.max(valA.length, valB.length);
+      let arrayDifferent = false;
+      for (let i = 0; i < maxLen; i++) {
+        const childPath = `${path}[${i}]`;
+        const prevLen = results.length;
+        compare(valA[i], valB[i], childPath);
+        if (results.length > prevLen) arrayDifferent = true;
+      }
+      return;
+    }
+
+    // Objects
+    const keysA = Object.keys(valA);
+    const keysB = Object.keys(valB);
+    const allKeys = [...new Set([...keysA, ...keysB])];
+
+    // If strict mode, also compare key order
+    if (strictOrder && keysA.length === keysB.length) {
+      for (let i = 0; i < keysA.length; i++) {
+        if (keysA[i] !== keysB[i]) {
+          results.push({
+            path: `${path}.__keyOrder__`,
+            status: DIFF.MODIFIED,
+            valueA: keysA,
+            valueB: keysB,
+            type: 'key-order'
+          });
+          break;
+        }
+      }
+    }
+
+    for (const key of allKeys) {
+      compare(valA[key], valB[key], `${path}.${key}`);
+    }
+  };
+
+  compare(a, b);
+  return results;
+};
+
+// ─── TreeNode: collapsible diff node ───
+const TreeNode = ({ diff, depth = 0 }) => {
+  const [collapsed, setCollapsed] = useState(depth > 2);
+  const isComplex = (diff.valueA && typeof diff.valueA === 'object') || (diff.valueB && typeof diff.valueB === 'object');
+  const pathParts = diff.path.split('.');
+  const key = pathParts[pathParts.length - 1].replace(/^\$/, 'root');
+
+  const statusClass = `jc-diff-${diff.status}`;
+  const statusBadge = {
+    [DIFF.ADDED]: { label: 'ADDED', emoji: '+' },
+    [DIFF.REMOVED]: { label: 'REMOVED', emoji: '−' },
+    [DIFF.MODIFIED]: { label: 'CHANGED', emoji: '~' },
+  }[diff.status];
+
+  const formatVal = (v) => {
+    if (v === undefined) return 'undefined';
+    if (v === null) return 'null';
+    if (typeof v === 'string') return `"${v}"`;
+    if (typeof v === 'object') return JSON.stringify(v, null, 2);
+    return String(v);
+  };
+
+  return (
+    <div className={`jc-tree-node ${statusClass}`} style={{ paddingLeft: `${depth * 16}px` }}>
+      <div className="jc-tree-row" onClick={() => isComplex && setCollapsed(!collapsed)}>
+        <span className="jc-tree-toggle">
+          {isComplex ? (collapsed ? <ChevronRight size={14} /> : <ChevronDown size={14} />) : <span className="jc-tree-dot">•</span>}
+        </span>
+        <code className="jc-tree-key">{key}</code>
+        {statusBadge && <span className={`jc-badge ${diff.status}`}>{statusBadge.emoji} {statusBadge.label}</span>}
+      </div>
+      {!collapsed && (
+        <div className="jc-tree-values">
+          {diff.status === DIFF.ADDED && (
+            <div className="jc-val-line added">
+              <span className="jc-val-prefix">+</span>
+              <pre>{formatVal(diff.valueB)}</pre>
+            </div>
+          )}
+          {diff.status === DIFF.REMOVED && (
+            <div className="jc-val-line removed">
+              <span className="jc-val-prefix">−</span>
+              <pre>{formatVal(diff.valueA)}</pre>
+            </div>
+          )}
+          {diff.status === DIFF.MODIFIED && (
+            <>
+              <div className="jc-val-line removed">
+                <span className="jc-val-prefix">−</span>
+                <pre>{formatVal(diff.valueA)}</pre>
+              </div>
+              <div className="jc-val-line added">
+                <span className="jc-val-prefix">+</span>
+                <pre>{formatVal(diff.valueB)}</pre>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ─── Main Component ───
 const JsonComparator = () => {
-  const [jsonA, setJsonA] = useState('{\n  "name": "Product",\n  "price": 100\n}');
-  const [jsonB, setJsonB] = useState('{\n  "name": "Product",\n  "price": 120,\n  "color": "red"\n}');
-  const [comparison, setComparison] = useState(null);
+  const [jsonA, setJsonA] = useState('');
+  const [jsonB, setJsonB] = useState('');
+  const [diffs, setDiffs] = useState(null);
   const [error, setError] = useState('');
   const [strictMode, setStrictMode] = useState(false);
-  const [ignoreOrder, setIgnoreOrder] = useState(false);
-  const [prettyPrint, setPrettyPrint] = useState(true);
-  const [showRaw, setShowRaw] = useState(false);
-  const resultsRef = useRef(null);
+  const [copied, setCopied] = useState(false);
+  const [filter, setFilter] = useState('all'); // all | added | removed | modified
+  const fileRefA = useRef(null);
+  const fileRefB = useRef(null);
 
-  // Deep comparison function
-  const deepCompare = (obj1, obj2, strict = false) => {
-    const added = {};
-    const removed = {};
-    const modified = {};
-
-    const compareObjects = (a, b, path = '') => {
-      // Handle null/undefined
-      if (a === null || b === null) {
-        if (a !== b) {
-          modified[path || 'root'] = {
-            old: a,
-            new: b,
-            type: 'value'
-          };
-        }
-        return;
+  // ─── File upload handler ───
+  const handleFileUpload = useCallback((side) => (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const text = ev.target.result;
+      // Validate JSON
+      try {
+        JSON.parse(text);
+        side === 'a' ? setJsonA(text) : setJsonB(text);
+        setError('');
+      } catch {
+        setError(`Invalid JSON in uploaded file "${file.name}"`);
       }
-
-      // Get all keys
-      const keysA = Object.keys(a || {});
-      const keysB = Object.keys(b || {});
-      const allKeys = new Set([...keysA, ...keysB]);
-
-      allKeys.forEach(key => {
-        const newPath = path ? `${path}.${key}` : key;
-        const valueA = a?.[key];
-        const valueB = b?.[key];
-
-        // Key added
-        if (!(key in (a || {})) && key in (b || {})) {
-          added[newPath] = valueB;
-        }
-        // Key removed
-        else if (key in (a || {}) && !(key in (b || {}))) {
-          removed[newPath] = valueA;
-        }
-        // Both exist - compare values
-        else if (key in (a || {}) && key in (b || {})) {
-          const typeA = typeof valueA;
-          const typeB = typeof valueB;
-
-          if (typeA !== typeB) {
-            modified[newPath] = {
-              old: valueA,
-              new: valueB,
-              type: 'type-change'
-            };
-          } else if (typeA === 'object') {
-            if (Array.isArray(valueA) && Array.isArray(valueB)) {
-              // Array comparison
-              if (JSON.stringify(valueA) !== JSON.stringify(valueB)) {
-                modified[newPath] = {
-                  old: valueA,
-                  new: valueB,
-                  type: 'array'
-                };
-              }
-            } else if (valueA !== null && valueB !== null) {
-              // Nested object
-              compareObjects(valueA, valueB, newPath);
-            }
-          } else if (valueA !== valueB) {
-            // Primitive value comparison
-            if (strict || typeA !== 'string' || typeA !== 'number') {
-              modified[newPath] = {
-                old: valueA,
-                new: valueB,
-                type: 'value'
-              };
-            } else if (!strict && valueA !== valueB) {
-              modified[newPath] = {
-                old: valueA,
-                new: valueB,
-                type: 'value'
-              };
-            }
-          }
-        }
-      });
     };
+    reader.readAsText(file);
+    e.target.value = ''; // reset for re-upload
+  }, []);
 
-    try {
-      compareObjects(obj1, obj2);
-      return { added, removed, modified };
-    } catch (err) {
-      throw new Error(`Comparison error: ${err.message}`);
-    }
-  };
-
-  // Validate and compare
-  const handleCompare = () => {
+  // ─── Compare ───
+  const handleCompare = useCallback(() => {
     setError('');
-    setComparison(null);
+    setDiffs(null);
+    setCopied(false);
 
-    try {
-      const parsedA = JSON.parse(jsonA);
-      const parsedB = JSON.parse(jsonB);
-
-      const result = deepCompare(parsedA, parsedB, strictMode);
-      
-      const hasChanges = Object.keys(result.added).length > 0 ||
-                        Object.keys(result.removed).length > 0 ||
-                        Object.keys(result.modified).length > 0;
-
-      setComparison({
-        ...result,
-        hasChanges,
-        total: Object.keys(result.added).length + 
-               Object.keys(result.removed).length + 
-               Object.keys(result.modified).length
-      });
-    } catch (err) {
-      setError(err.message);
+    if (!jsonA.trim() || !jsonB.trim()) {
+      setError('Please paste or upload JSON in both panels.');
+      return;
     }
-  };
 
-  // Download comparison result
-  const handleDownload = () => {
-    if (!comparison) return;
+    let parsedA, parsedB;
+    try { parsedA = JSON.parse(jsonA); } catch { setError('Invalid JSON in Panel A.'); return; }
+    try { parsedB = JSON.parse(jsonB); } catch { setError('Invalid JSON in Panel B.'); return; }
 
-    const downloadData = {
-      timestamp: new Date().toISOString(),
-      mode: strictMode ? 'strict' : 'loose',
-      comparison
-    };
+    const results = deepCompare(parsedA, parsedB, strictMode);
+    setDiffs(results);
+  }, [jsonA, jsonB, strictMode]);
 
-    const dataStr = JSON.stringify(downloadData, null, 2);
-    const dataBlob = new Blob([dataStr], { type: 'application/json' });
-    const url = URL.createObjectURL(dataBlob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `json-comparison-${Date.now()}.json`;
-    link.click();
-    URL.revokeObjectURL(url);
-  };
+  // ─── Clear ───
+  const handleClear = () => { setJsonA(''); setJsonB(''); setDiffs(null); setError(''); setCopied(false); };
 
-  // Copy result to clipboard
-  const handleCopyResult = () => {
-    if (!comparison) return;
-    const text = JSON.stringify(comparison, null, 2);
-    navigator.clipboard.writeText(text).then(() => {
-      alert('Comparison result copied to clipboard!');
-    });
-  };
+  // ─── Load sample ───
+  const handleLoadSample = () => { setJsonA(SAMPLE_A); setJsonB(SAMPLE_B); setDiffs(null); setError(''); };
 
-  // Pretty print JSON
-  const handlePrettyPrintA = () => {
+  // ─── Format / pretty print ───
+  const handleFormat = (side) => {
     try {
-      const parsed = JSON.parse(jsonA);
-      setJsonA(JSON.stringify(parsed, null, 2));
-    } catch (err) {
-      setError('Invalid JSON in A');
-    }
+      if (side === 'a') setJsonA(JSON.stringify(JSON.parse(jsonA), null, 2));
+      else setJsonB(JSON.stringify(JSON.parse(jsonB), null, 2));
+    } catch { setError(`Invalid JSON in Panel ${side.toUpperCase()}.`); }
   };
 
-  const handlePrettyPrintB = () => {
-    try {
-      const parsed = JSON.parse(jsonB);
-      setJsonB(JSON.stringify(parsed, null, 2));
-    } catch (err) {
-      setError('Invalid JSON in B');
-    }
+  // ─── Copy result ───
+  const handleCopy = () => {
+    if (!diffs) return;
+    const text = JSON.stringify(diffs, null, 2);
+    navigator.clipboard.writeText(text).then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000); });
   };
 
-  // Reset all
-  const handleReset = () => {
-    setJsonA('{}');
-    setJsonB('{}');
-    setComparison(null);
-    setError('');
+  // ─── Download diff ───
+  const handleDownload = (format) => {
+    if (!diffs) return;
+    const payload = format === 'json'
+      ? JSON.stringify({ timestamp: new Date().toISOString(), strict: strictMode, differences: diffs }, null, 2)
+      : diffs.map(d => `[${d.status.toUpperCase()}] ${d.path}: ${d.valueA !== undefined ? JSON.stringify(d.valueA) : ''} → ${d.valueB !== undefined ? JSON.stringify(d.valueB) : ''}`).join('\n');
+
+    const blob = new Blob([payload], { type: format === 'json' ? 'application/json' : 'text/plain' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `json-diff-${Date.now()}.${format === 'json' ? 'json' : 'txt'}`;
+    a.click();
+    URL.revokeObjectURL(a.href);
   };
+
+  // ─── Stat counts ───
+  const counts = diffs ? {
+    added: diffs.filter(d => d.status === DIFF.ADDED).length,
+    removed: diffs.filter(d => d.status === DIFF.REMOVED).length,
+    modified: diffs.filter(d => d.status === DIFF.MODIFIED).length,
+  } : null;
+
+  const filteredDiffs = diffs ? (filter === 'all' ? diffs : diffs.filter(d => d.status === filter)) : [];
 
   return (
     <div className="feature-wrapper">
       <div className="tool-header">
-        <h1><Compare2 size={32} /> JSON Comparator</h1>
-        <p>Compare two JSON objects and identify differences</p>
+        <h1>JSON Compare Tool</h1>
+        <p>Deep-compare two JSON objects — view added, removed, and modified fields in a tree diff.</p>
       </div>
 
+      {/* ── Error bar ── */}
       {error && (
-        <div className="error-box">
-          <span>❌ {error}</span>
+        <div className="jc-error-bar">
+          <span>⚠️ {error}</span>
+          <button onClick={() => setError('')}>✕</button>
         </div>
       )}
 
-      {/* Controls */}
-      <div className="jcomp-controls glass-panel">
-        <div className="jcomp-controls-row">
-          <label className="jcomp-checkbox">
-            <input type="checkbox" checked={strictMode} onChange={(e) => setStrictMode(e.target.checked)} />
-            Strict Mode (Type Sensitive)
+      {/* ── Controls ── */}
+      <div className="jc-toolbar glass-panel">
+        <div className="jc-toolbar-left">
+          <label className="jc-switch-label">
+            <input type="checkbox" checked={strictMode} onChange={e => setStrictMode(e.target.checked)} />
+            <span className="jc-switch-slider"></span>
+            Strict Mode
           </label>
-          <label className="jcomp-checkbox">
-            <input type="checkbox" checked={ignoreOrder} onChange={(e) => setIgnoreOrder(e.target.checked)} />
-            Ignore Key Order
-          </label>
-          <label className="jcomp-checkbox">
-            <input type="checkbox" checked={prettyPrint} onChange={(e) => setPrettyPrint(e.target.checked)} />
-            Pretty Print
-          </label>
-        </div>
-
-        <div className="jcomp-button-group">
-          <button className="premium-button" onClick={handleCompare}>
-            <Compare2 size={18} /> Compare
+          <button className="jc-text-btn" onClick={handleLoadSample}>
+            <FileJson size={15} /> Load Sample
           </button>
-          <button className="secondary-button" onClick={handleReset}>
-            <RefreshCw size={18} /> Reset
+        </div>
+        <div className="jc-toolbar-right">
+          <button className="premium-button jc-compare-btn" onClick={handleCompare}>
+            <GitCompareArrows size={18} /> Compare
+          </button>
+          <button className="jc-outline-btn" onClick={handleClear}>
+            <RefreshCw size={16} /> Clear
           </button>
         </div>
       </div>
 
-      {/* Input Section */}
-      <div className="jcomp-grid">
-        {/* JSON A */}
-        <div className="jcomp-editor-section">
-          <div className="jcomp-editor-header">
+      {/* ── Editor panels ── */}
+      <div className="jc-panels">
+        {/* Panel A */}
+        <div className="jc-panel glass-panel">
+          <div className="jc-panel-header">
             <h3>JSON A</h3>
-            <button className="jcomp-small-btn" onClick={handlePrettyPrintA} title="Pretty Print">
-              ✨ Format
-            </button>
+            <div className="jc-panel-actions">
+              <button className="jc-icon-btn" onClick={() => handleFormat('a')} title="Format JSON">{ }</button>
+              <button className="jc-icon-btn" onClick={() => fileRefA.current?.click()} title="Upload JSON file">
+                <Upload size={15} />
+              </button>
+              <input type="file" ref={fileRefA} accept=".json,.txt" style={{ display: 'none' }} onChange={handleFileUpload('a')} />
+            </div>
           </div>
           <textarea
-            className="jcomp-editor"
+            className="jc-editor"
             value={jsonA}
-            onChange={(e) => setJsonA(e.target.value)}
-            placeholder="Paste JSON A here..."
-            spellCheck="false"
+            onChange={e => setJsonA(e.target.value)}
+            placeholder='{\n  "name": "value",\n  ...\n}'
+            spellCheck={false}
           />
         </div>
 
-        {/* JSON B */}
-        <div className="jcomp-editor-section">
-          <div className="jcomp-editor-header">
+        {/* Panel B */}
+        <div className="jc-panel glass-panel">
+          <div className="jc-panel-header">
             <h3>JSON B</h3>
-            <button className="jcomp-small-btn" onClick={handlePrettyPrintB} title="Pretty Print">
-              ✨ Format
-            </button>
+            <div className="jc-panel-actions">
+              <button className="jc-icon-btn" onClick={() => handleFormat('b')} title="Format JSON">{ }</button>
+              <button className="jc-icon-btn" onClick={() => fileRefB.current?.click()} title="Upload JSON file">
+                <Upload size={15} />
+              </button>
+              <input type="file" ref={fileRefB} accept=".json,.txt" style={{ display: 'none' }} onChange={handleFileUpload('b')} />
+            </div>
           </div>
           <textarea
-            className="jcomp-editor"
+            className="jc-editor"
             value={jsonB}
-            onChange={(e) => setJsonB(e.target.value)}
-            placeholder="Paste JSON B here..."
-            spellCheck="false"
+            onChange={e => setJsonB(e.target.value)}
+            placeholder='{\n  "name": "other-value",\n  ...\n}'
+            spellCheck={false}
           />
         </div>
       </div>
 
-      {/* Results Section */}
-      {comparison && (
-        <div className="jcomp-results glass-panel" ref={resultsRef}>
-          <div className="jcomp-results-header">
-            <h3>Comparison Results</h3>
-            <div className="jcomp-summary">
-              <span className="jcomp-summary-item added">✓ {Object.keys(comparison.added).length} Added</span>
-              <span className="jcomp-summary-item removed">✖ {Object.keys(comparison.removed).length} Removed</span>
-              <span className="jcomp-summary-item modified">⚠ {Object.keys(comparison.modified).length} Modified</span>
+      {/* ── Results ── */}
+      {diffs && (
+        <div className="jc-results glass-panel">
+          {/* Summary bar */}
+          <div className="jc-results-header">
+            <h3>Diff Results</h3>
+            <div className="jc-stats">
+              <button className={`jc-stat added ${filter === 'added' ? 'active' : ''}`} onClick={() => setFilter(f => f === 'added' ? 'all' : 'added')}>
+                + {counts.added} Added
+              </button>
+              <button className={`jc-stat removed ${filter === 'removed' ? 'active' : ''}`} onClick={() => setFilter(f => f === 'removed' ? 'all' : 'removed')}>
+                − {counts.removed} Removed
+              </button>
+              <button className={`jc-stat modified ${filter === 'modified' ? 'active' : ''}`} onClick={() => setFilter(f => f === 'modified' ? 'all' : 'modified')}>
+                ~ {counts.modified} Modified
+              </button>
             </div>
-            <div className="jcomp-results-actions">
-              <button className="jcomp-small-btn" onClick={handleCopyResult} title="Copy Result">
-                <Copy size={16} /> Copy
+            <div className="jc-results-actions">
+              <button className="jc-icon-btn" onClick={handleCopy} title="Copy to clipboard">
+                {copied ? <Check size={16} /> : <Clipboard size={16} />}
               </button>
-              <button className="jcomp-small-btn" onClick={handleDownload} title="Download Result">
-                <Download size={16} /> Download
+              <button className="jc-icon-btn" onClick={() => handleDownload('json')} title="Download as JSON">
+                <Download size={16} />
               </button>
-              <button className="jcomp-small-btn" onClick={() => setShowRaw(!showRaw)} title="Toggle Raw View">
-                <Eye size={16} /> {showRaw ? 'Pretty' : 'Raw'}
+              <button className="jc-text-btn small" onClick={() => handleDownload('txt')}>
+                .txt
               </button>
             </div>
           </div>
 
-          {showRaw ? (
-            // Raw JSON view
-            <div className="jcomp-raw-result">
-              <pre>{JSON.stringify(comparison, null, 2)}</pre>
-            </div>
-          ) : (
-            // Formatted view
-            <div className="jcomp-formatted-result">
-              {comparison.total === 0 ? (
-                <div className="jcomp-no-changes">✓ No differences found - JSON objects are identical!</div>
-              ) : (
-                <>
-                  {/* Added */}
-                  {Object.keys(comparison.added).length > 0 && (
-                    <div className="jcomp-section">
-                      <h4 className="jcomp-section-title added">🟢 Added Keys ({Object.keys(comparison.added).length})</h4>
-                      <div className="jcomp-items">
-                        {Object.entries(comparison.added).map(([key, value]) => (
-                          <div key={key} className="jcomp-item added">
-                            <code className="jcomp-key">{key}</code>
-                            <code className="jcomp-value">{JSON.stringify(value)}</code>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Removed */}
-                  {Object.keys(comparison.removed).length > 0 && (
-                    <div className="jcomp-section">
-                      <h4 className="jcomp-section-title removed">🔴 Removed Keys ({Object.keys(comparison.removed).length})</h4>
-                      <div className="jcomp-items">
-                        {Object.entries(comparison.removed).map(([key, value]) => (
-                          <div key={key} className="jcomp-item removed">
-                            <code className="jcomp-key">{key}</code>
-                            <code className="jcomp-value">{JSON.stringify(value)}</code>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Modified */}
-                  {Object.keys(comparison.modified).length > 0 && (
-                    <div className="jcomp-section">
-                      <h4 className="jcomp-section-title modified">🟡 Modified Keys ({Object.keys(comparison.modified).length})</h4>
-                      <div className="jcomp-items">
-                        {Object.entries(comparison.modified).map(([key, diff]) => (
-                          <div key={key} className="jcomp-item modified">
-                            <div className="jcomp-modified-content">
-                              <code className="jcomp-key">{key}</code>
-                              <div className="jcomp-diff-pair">
-                                <div className="jcomp-old">
-                                  <span className="jcomp-label">Old:</span>
-                                  <code>{JSON.stringify(diff.old)}</code>
-                                </div>
-                                <div className="jcomp-arrow">→</div>
-                                <div className="jcomp-new">
-                                  <span className="jcomp-label">New:</span>
-                                  <code>{JSON.stringify(diff.new)}</code>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
-          )}
+          {/* Diff tree */}
+          <div className="jc-diff-tree">
+            {filteredDiffs.length === 0 ? (
+              <div className="jc-no-diff">
+                {diffs.length === 0
+                  ? '✅ JSON objects are identical — no differences found.'
+                  : `No ${filter} differences.`}
+              </div>
+            ) : (
+              filteredDiffs.map((d, i) => <TreeNode key={d.path + i} diff={d} depth={d.path.split('.').length - 1} />)
+            )}
+          </div>
         </div>
       )}
     </div>

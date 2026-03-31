@@ -1,16 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
-import JewelleryCalculator from './JewelleryCalculator';
-import '../Features.css';
-
-const PriceDashboard = () => {
-  const [prices, setPrices] = useState({
-    gold24k: { current: 6250.50, change: '+12.30', isUp: true },
-    gold22k: { current: 5720.00, change: '+10.50', isUp: true },
-    silver: { current: 74.80, change: '-0.15', isUp: false }, // 1 gram
-    dollar: { current: 83.20, change: '+0.15', isUp: true }
-  });
-
+const PriceDashboard = ({ prices, isLoading, lastUpdate }) => {
   const generateHistoricalData = (baseRate24k) => {
     const result = [];
     const today = new Date();
@@ -54,73 +44,7 @@ const PriceDashboard = () => {
     return result;
   };
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [lastUpdate, setLastUpdate] = useState('');
   const [historyWeight, setHistoryWeight] = useState(1);
-
-  // Fetch real market data
-  useEffect(() => {
-    const fetchMarketData = async () => {
-      try {
-        setIsLoading(true);
-        // Using a free, public exchange rate API that provides USD to INR, XAU (Gold), and XAG (Silver)
-        const response = await fetch('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json');
-        
-        if (!response.ok) throw new Error('API request failed');
-        
-        const data = await response.json();
-        
-        const inrRate = data.usd.inr;
-        const xauRate = data.usd.xau; // 1 USD in Troy Ounces of Gold
-        const xagRate = data.usd.xag; // 1 USD in Troy Ounces of Silver
-        
-        // 1 Troy Ounce = 31.1034768 grams
-        const gramsPerOz = 31.1034768;
-        
-        // Price of 1 Troy Oz in INR = (1 / metalRate) * inrRate = inrRate / metalRate
-        const gold1gInr = (inrRate / xauRate) / gramsPerOz;
-        const silver1gInr = (inrRate / xagRate) / gramsPerOz;
-        const gold22kInr = gold1gInr * (22 / 24); // 22k is roughly 91.67% of 24k
-
-        setPrices(prev => ({
-          gold24k: {
-            current: gold1gInr,
-            change: prev.gold24k.current ? (((gold1gInr - prev.gold24k.current) / prev.gold24k.current) * 100).toFixed(2) + '%' : 'Live',
-            isUp: prev.gold24k.current ? gold1gInr >= prev.gold24k.current : true
-          },
-          gold22k: {
-            current: gold22kInr,
-            change: prev.gold22k.current ? (((gold22kInr - prev.gold22k.current) / prev.gold22k.current) * 100).toFixed(2) + '%' : 'Live',
-            isUp: prev.gold22k.current ? gold22kInr >= prev.gold22k.current : true
-          },
-          silver: {
-            current: silver1gInr,
-            change: prev.silver.current ? (((silver1gInr - prev.silver.current) / prev.silver.current) * 100).toFixed(2) + '%' : 'Live',
-            isUp: prev.silver.current ? silver1gInr >= prev.silver.current : true
-          },
-          dollar: {
-            current: inrRate,
-            change: prev.dollar.current ? (((inrRate - prev.dollar.current) / prev.dollar.current) * 100).toFixed(2) + '%' : 'Live',
-            isUp: prev.dollar.current ? inrRate >= prev.dollar.current : true
-          }
-        }));
-
-        const now = new Date();
-        setLastUpdate(now.toLocaleTimeString());
-      } catch (error) {
-        console.error("Failed to fetch market data:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    // Initial fetch
-    fetchMarketData();
-
-    // Re-fetch every 60 seconds (rate limited gracefully by provider CDN)
-    const interval = setInterval(fetchMarketData, 60000);
-    return () => clearInterval(interval);
-  }, []);
 
   const Card = ({ title, data, symbol }) => (
     <div className="price-card">
@@ -130,7 +54,7 @@ const PriceDashboard = () => {
       </div>
       <div className="card-body">
         <h2 className="current-price">
-          ₹{data.current.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          ₹{data.current ? data.current.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '---'}
         </h2>
         <div className={`price-change ${data.isUp ? 'positive' : 'negative'}`}>
           {data.isUp ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
@@ -191,7 +115,6 @@ const PriceDashboard = () => {
             </thead>
             <tbody>
               {generateHistoricalData(prices.gold24k.current).map(row => {
-                // Scale calculations dynamically based on dropdown!
                 const r24 = row.rate24k * historyWeight;
                 const c24 = row.change24k * historyWeight;
                 const r22 = row.rate22k * historyWeight;
@@ -219,8 +142,6 @@ const PriceDashboard = () => {
           </table>
         </div>
       </div>
-
-      <JewelleryCalculator liveGoldPrice24k={prices.gold24k.current} />
     </div>
   );
 };

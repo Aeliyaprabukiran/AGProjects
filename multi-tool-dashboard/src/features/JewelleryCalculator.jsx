@@ -9,31 +9,25 @@ const JewelleryCalculator = ({ liveGoldPrice24k }) => {
 
   // Default values
   const [billData, setBillData] = useState(() => {
+    const defaultState = {
+      calcMode: 'weight',
+      itemType: 'jewellery',
+      amount: '',
+      shopName: '7yaTools Jewellers',
+      customerName: '',
+      weight: '',
+      purity: '22',
+      rateInput: '',
+      wastagePercent: '10',
+      makingMode: 'percent',
+      makingValue: '0',
+      gstPercent: '3',
+    };
     try {
       const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
-      return saved ? JSON.parse(saved) : {
-        shopName: '7yaTools Jewellers',
-        customerName: '',
-        weight: '',
-        purity: '22', // 22 or 24
-        rateInput: '',
-        wastagePercent: '10',
-        makingMode: 'percent', // 'percent', 'perGram', 'fixed'
-        makingValue: '5',
-        gstPercent: '3',
-      };
+      return saved ? { ...defaultState, ...JSON.parse(saved) } : defaultState;
     } catch {
-      return {
-        shopName: '7yaTools Jewellers',
-        customerName: '',
-        weight: '',
-        purity: '22',
-        rateInput: '',
-        wastagePercent: '10',
-        makingMode: 'percent',
-        makingValue: '5',
-        gstPercent: '3',
-      };
+      return defaultState;
     }
   });
 
@@ -55,7 +49,21 @@ const JewelleryCalculator = ({ liveGoldPrice24k }) => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setBillData(prev => ({ ...prev, [name]: value }));
+    setBillData(prev => {
+      const next = { ...prev, [name]: value };
+      if (name === 'itemType') {
+        if (value === 'jewellery') {
+          next.makingMode = 'percent';
+          next.makingValue = '15';
+          next.wastagePercent = '10';
+        } else if (value === 'coins') {
+          next.makingMode = 'percent';
+          next.makingValue = '2';
+          next.wastagePercent = '0';
+        }
+      }
+      return next;
+    });
     if (name === 'rateInput') setUseLivePrice(false);
     
     // Trigger tiny animation flag
@@ -65,6 +73,9 @@ const JewelleryCalculator = ({ liveGoldPrice24k }) => {
 
   const handleReset = () => {
     setBillData({
+      calcMode: 'weight',
+      itemType: 'jewellery',
+      amount: '',
       shopName: '7yaTools Jewellers',
       customerName: '',
       weight: '',
@@ -72,7 +83,7 @@ const JewelleryCalculator = ({ liveGoldPrice24k }) => {
       rateInput: Math.round((liveGoldPrice24k || 0) * (22/24)),
       wastagePercent: '10',
       makingMode: 'percent',
-      makingValue: '5',
+      makingValue: '0',
       gstPercent: '3',
     });
     setUseLivePrice(true);
@@ -97,12 +108,39 @@ const JewelleryCalculator = ({ liveGoldPrice24k }) => {
   };
 
   // --- Calculations ---
-  const weight = parseFloat(billData.weight) || 0;
-  
-  // 1. Rate per gram used (direct from input since it now accounts for selected purity)
   const effectiveRate = parseFloat(billData.rateInput) || 0;
   
-  // 2. Base Gold Value
+  let weight = 0;
+  if (billData.calcMode === 'budget') {
+    const amount = parseFloat(billData.amount) || 0;
+    if (amount > 0 && effectiveRate > 0) {
+      const wPct = (parseFloat(billData.wastagePercent) || 0) / 100;
+      let mPct = 0;
+      let mVal = 0;
+      if (billData.makingMode === 'percent') {
+        mPct = (parseFloat(billData.makingValue) || 0) / 100;
+      } else if (billData.makingMode === 'perGram') {
+        mVal = parseFloat(billData.makingValue) || 0;
+      }
+      const gstPct = (parseFloat(billData.gstPercent) || 0) / 100;
+      
+      const subtotalTarget = amount / (1 + gstPct);
+      
+      if (billData.makingMode === 'percent') {
+        weight = subtotalTarget / (effectiveRate * (1 + wPct + mPct));
+      } else if (billData.makingMode === 'perGram') {
+        weight = subtotalTarget / (effectiveRate * (1 + wPct) + mVal);
+      } else if (billData.makingMode === 'fixed') {
+        const fixedMVal = parseFloat(billData.makingValue) || 0;
+        weight = (subtotalTarget - fixedMVal) / (effectiveRate * (1 + wPct));
+        if (weight < 0) weight = 0;
+      }
+    }
+  } else {
+    weight = parseFloat(billData.weight) || 0;
+  }
+  
+  // 1. Base Gold Value
   const baseValue = weight * effectiveRate;
   
   // 3. Wastage
@@ -155,18 +193,46 @@ const JewelleryCalculator = ({ liveGoldPrice24k }) => {
             </button>
           </div>
 
+          <div className="jc-toggle-group mb-4">
+            <button 
+              className={billData.calcMode !== 'budget' ? 'active' : ''} 
+              onClick={() => handleInputChange({ target: { name: 'calcMode', value: 'weight'} })}
+            >By Weight</button>
+            <button 
+              className={billData.calcMode === 'budget' ? 'active' : ''} 
+              onClick={() => handleInputChange({ target: { name: 'calcMode', value: 'budget'} })}
+            >By Amount (Budget)</button>
+          </div>
+
           <div className="jc-form-group-row">
-            <div className="jc-input-group">
-              <label>Weight (grams)</label>
-              <input type="number" name="weight" value={billData.weight} onChange={handleInputChange} placeholder="e.g. 15.5" min="0" step="0.01" />
-            </div>
-            <div className="jc-input-group">
-              <label>Purity</label>
-              <select name="purity" value={billData.purity} onChange={handleInputChange}>
-                <option value="22">22 Karat</option>
-                <option value="24">24 Karat</option>
-              </select>
-            </div>
+            {billData.calcMode === 'budget' ? (
+              <div className="jc-input-group">
+                <label>Budget Amount (₹)</label>
+                <input type="number" name="amount" value={billData.amount} onChange={handleInputChange} placeholder="e.g. 50000" min="0" />
+              </div>
+            ) : (
+              <div className="jc-input-group">
+                <label>Weight (grams)</label>
+                <input type="number" name="weight" value={billData.weight} onChange={handleInputChange} placeholder="e.g. 15.5" min="0" step="0.01" />
+              </div>
+            )}
+            {billData.calcMode === 'budget' && (
+              <div className="jc-input-group">
+                <label>Item Type</label>
+                <select name="itemType" value={billData.itemType} onChange={handleInputChange}>
+                  <option value="jewellery">Jewellery</option>
+                  <option value="coins">Coins</option>
+                </select>
+              </div>
+            )}
+          </div>
+          
+          <div className="jc-input-group mt-3">
+            <label>Purity</label>
+            <select name="purity" value={billData.purity} onChange={handleInputChange}>
+              <option value="22">22 Karat</option>
+              <option value="24">24 Karat</option>
+            </select>
           </div>
 
           <div className="jc-input-group mt-3">
@@ -210,7 +276,7 @@ const JewelleryCalculator = ({ liveGoldPrice24k }) => {
 
           <div className="jc-input-group">
             <label>Shop Name</label>
-            <input type="text" name="shopName" value={billData.shopName} onChange={handleInputChange} />
+            <input type="text" name="shopName" value={billData.shopName} readOnly className="readonly-input" title="Shop Name is officially fixed" />
           </div>
           <div className="jc-input-group mt-3">
             <label>Customer Name (Optional)</label>
