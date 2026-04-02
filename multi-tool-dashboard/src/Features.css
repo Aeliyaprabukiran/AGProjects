@@ -11,11 +11,23 @@
   padding: 24px;
 }
 
+@media (max-width: 768px) {
+  .panel {
+    padding: 16px 12px;
+  }
+}
+
 /* Common Layouts */
 .calc-layout, .bmi-layout, .tags-layout {
   display: flex;
   gap: 24px;
   flex: 1;
+}
+
+@media (max-width: 1100px) {
+  .calc-layout, .bmi-layout, .tags-layout {
+    flex-direction: column;
+  }
 }
 
 .calc-input-section, .bmi-input-section, .tags-input-section {
@@ -189,6 +201,7 @@
   border-radius: 12px;
   padding: 4px;
   margin-bottom: 24px;
+  overflow: hidden;
 }
 
 .toggle-btn {
@@ -455,13 +468,89 @@
   .tool-header p {
     font-size: 0.95rem;
   }
-  
-  .tool-header p {
-    font-size: 0.95rem;
-  }
 
   .qr-presets {
     grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* ── Jewellery Calculator mobile fixes ── */
+  .jc-wrapper {
+    margin-top: 20px;
+    padding-top: 20px;
+  }
+
+  .jc-toggle-group, .toggle-group {
+    flex-direction: column !important;
+    background: rgba(0,0,0,0.2);
+    gap: 4px;
+    padding: 4px;
+  }
+  
+  .jc-toggle-group button, .toggle-btn {
+    width: 100% !important;
+    flex: none !important;
+    padding: 12px 8px;
+    font-size: 0.9rem;
+    white-space: normal;
+    text-align: center;
+    border-radius: 8px !important;
+  }
+
+  .jc-form-group-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .jc-bill-card {
+    padding: 20px 16px;
+    border-radius: 12px;
+  }
+
+  .jc-bill-header h1 {
+    font-size: 1.4rem;
+  }
+
+  .jc-grand-total h2 {
+    font-size: 2.2rem;
+  }
+
+  .jc-grand-total {
+    padding: 16px;
+  }
+
+  .jc-item-row span,
+  .jc-item-row strong {
+    font-size: 0.88rem;
+  }
+
+  .jc-breakdown-row {
+    font-size: 0.88rem;
+  }
+
+  .jc-controls, .panel, .calc-input-section, .calc-result-section {
+    padding: 16px 10px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+  }
+
+  /* ── Random Picker mobile ── */
+  .rp-instant-name {
+    font-size: 2.2rem;
+  }
+
+  .rp-huge-btn {
+    padding: 14px 28px;
+    font-size: 0.95rem;
+  }
+
+  .rp-winner-alert {
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .rp-winner-details h2 {
+    font-size: 1.4rem;
   }
 }
 
@@ -1738,27 +1827,9 @@
 /* ============================================================
    JEWELLERY CALCULATOR
    ============================================================ */
-.jc-wrapper {
-  margin-top: 40px;
-  border-top: 1px solid rgba(255,255,255,0.1);
-  padding-top: 40px;
-}
+/* jc-wrapper and jc-grid removed in favor of common classes */
 
-.jc-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 32px;
-  align-items: flex-start;
-}
-
-@media (max-width: 1100px) {
-  .jc-grid {
-    grid-template-columns: 1fr;
-    gap: 24px;
-  }
-}
-
-.jc-controls {
+.calc-input-section.jc-controls {
   display: flex;
   flex-direction: column;
 }

@@ -177,15 +177,15 @@ const JewelleryCalculator = ({ liveGoldPrice24k }) => {
   });
 
   return (
-    <div className="jc-wrapper mt-8">
+    <div className="feature-wrapper">
       <div className="tool-header">
         <h1>Jewellery Billing</h1>
         <p>Professional Indian-standard jewellery billing with accurate wastage and GST logic.</p>
       </div>
 
-      <div className="jc-grid">
+      <div className="calc-layout">
         {/* Controls Section */}
-        <div className="jc-controls panel glass-panel">
+        <div className="calc-input-section panel glass-panel">
           <div className="jc-header-flex">
             <h3><Settings2 size={18} /> Calculator Settings</h3>
             <button className="jc-reset-btn" onClick={handleReset} title="Reset Fields">
@@ -285,7 +285,7 @@ const JewelleryCalculator = ({ liveGoldPrice24k }) => {
         </div>
 
         {/* Bill Preview Section */}
-        <div className="jc-preview-area">
+        <div className="calc-result-section">
           <div className="jc-bill-card" ref={billRef}>
             {/* Bill Header */}
             <div className="jc-bill-header">
