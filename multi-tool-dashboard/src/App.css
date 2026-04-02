@@ -109,6 +109,13 @@
   margin: 16px 16px 16px 0;
   display: flex;
   flex-direction: column;
+  flex-shrink: 0;
+}
+
+@media (max-width: 1200px) {
+  .ads-sidebar {
+    display: none; /* Hide right ad sidebar on tablet-size screens to give more room to tools */
+  }
 }
 
 .ad-box {
@@ -207,41 +214,49 @@
   box-shadow: 0 4px 15px rgba(88, 166, 255, 0.4);
 }
 
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 240px;
+  }
+}
+
 @media (max-width: 768px) {
   .app-layout {
     flex-direction: column;
-    height: auto;
-    min-height: 100dvh;
-    overflow: visible;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
   }
   
   .sidebar {
     width: 100%;
     margin: 0;
-    padding: 12px 16px;
+    padding: 8px 12px;
     flex-direction: row;
     overflow-x: auto;
-    overflow-y: visible;
+    overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
     white-space: nowrap;
-    position: sticky;
+    position: relative;
     top: 0;
     z-index: 50;
     border-radius: 0;
-    border-left: none;
-    border-right: none;
-    border-top: none;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE/Edge */
+    border: none;
+    border-bottom: 1px solid var(--surface-border);
+    flex-shrink: 0;
+    scrollbar-width: none; 
+    gap: 4px;
   }
   
   .sidebar::-webkit-scrollbar {
-    display: none; /* Chrome/Safari */
+    display: none;
   }
   
   .sidebar-header {
     margin-bottom: 0;
-    margin-right: 16px;
+    margin-right: 12px;
+    padding-right: 12px;
+    border-right: 1px solid var(--surface-border);
   }
   
   .sidebar-header h2 {
@@ -251,22 +266,26 @@
   .sidebar-nav {
     flex-direction: row;
     align-items: center;
-    gap: 8px;
-    width: max-content;
+    gap: 4px;
+    width: auto;
+    flex: none;
   }
   
   .nav-btn {
-    padding: 10px 14px;
+    padding: 8px 12px;
     border-radius: 8px;
+    font-size: 0.9rem;
+    gap: 8px;
   }
   
   .nav-btn.active {
     border-right: none;
-    background: rgba(88, 166, 255, 0.15);
+    border-bottom: 2px solid var(--accent-primary);
+    background: rgba(88, 166, 255, 0.1);
   }
   
   .nav-btn span {
-    display: none;
+    display: inline-block; /* Show labels on mobile too, but they will scroll horizontally */
   }
 
   .nav-tooltip {
@@ -278,20 +297,30 @@
   }
   
   .main-content {
-    padding: 16px;
-    flex: none;
+    padding: 0;
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
   }
 
   .feature-container {
-    padding: 24px 20px;
-    overflow-y: visible;
-    height: auto;
+    padding: 20px 16px;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    flex: 1;
+    height: 100%;
   }
   
   .ads-sidebar {
-    width: auto;
-    height: 100px;
-    margin: 0 16px 16px 16px;
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 0;
+    padding: 12px;
+    border-top: 1px solid var(--surface-border);
   }
 }
 

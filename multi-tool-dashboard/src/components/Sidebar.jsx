@@ -115,16 +115,34 @@ const Sidebar = ({ currentFeature, setCurrentFeature, isDarkMode, setIsDarkMode 
 
   const handleTouchMove = useCallback((e) => {
     if (dragIndex === null) return;
-    e.preventDefault();
+    
+    // Determine if we are in horizontal mode (mobile) or vertical (desktop)
+    const isMobileNav = window.innerWidth <= 768;
+    
     const touch = e.touches[0];
-    const y = touch.clientY;
+    const clientX = touch.clientX;
+    const clientY = touch.clientY;
+
     // Find which item the finger is over
     for (let i = 0; i < touchItemRefs.current.length; i++) {
       const el = touchItemRefs.current[i];
       if (!el) continue;
       const rect = el.getBoundingClientRect();
-      if (y >= rect.top && y <= rect.bottom) {
+      
+      let isOver = false;
+      if (isMobileNav) {
+        // Horizontal check
+        isOver = clientX >= rect.left && clientX <= rect.right;
+      } else {
+        // Vertical check
+        isOver = clientY >= rect.top && clientY <= rect.bottom;
+      }
+
+      if (isOver) {
         setOverIndex(i);
+        // Only prevent default if we've actually moved enough to be "dragging"
+        // and we're over a target to avoid blocking scrolling unless intended
+        if (e.cancelable) e.preventDefault();
         break;
       }
     }

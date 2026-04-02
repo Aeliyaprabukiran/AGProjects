@@ -1,0 +1,48 @@
+7yaTools Dashboard - Project Features
+======================================
+
+Welcome to 7yaTools, a premium utility dashboard. Here's a list of all current features that you can benefit from:
+
+1. JEWELLERY BILLING & CALCULATOR
+   Professional Indian-standard billing with accurate wastage and GST logic.
+   Fetch live gold pricing (24K/22K) and download high-resolution invoices.
+
+2. PRICE DASHBOARD (MARKET TRENDS)
+   Live tracking for Gold (24K/22K), Silver, and USD exchange rates.
+   View a 10-day historical gold history table for better price prediction.
+
+3. SMART INTEREST CALCULATOR
+   Calculate simple and compound interest easily with a breakdown of interest earned.
+
+4. HOME LOAN EMI CALCULATOR
+   Plan your home loan with an interactive EMI calculator, tenure sliders, and total cost breakdown.
+
+5. JSON COMPARE TOOL (DEEP DIFF)
+   Perfect for developers! Deep-compare two JSON objects and see added, removed, or changed keys in a neat tree view.
+
+6. IMAGE COMPRESSOR & RESIZER
+   Compress PNG, JPG, and WebP images. Use the "Before/After" slider to verify quality before downloading.
+
+7. QR CODE GENERATOR
+   Convert text, URLs, and contacts into custom QR codes with premium color themes.
+
+8. INSTAGRAM HASHTAG GENERATOR
+   Generate niche-specific hashtags (Tech, Food, Fitness, etc.) and copy them to your clipboard with one tap.
+
+9. BMI CALCULATOR (HEALTH METRICS)
+   Track your health with a visual Body Mass Index calculator featuring height/weight sliders.
+
+10. DEVELOPER NEWS HUB
+    Stay updated with the latest tech news from multiple top-tier sources.
+
+11. ADVANCED RANDOM PICKER
+    Includes an interactive spinner wheel, speed-draw mode, and a multi-team generator.
+
+12. CUSTOMIZABLE DASHBOARD
+    The sidebar is fully reorderable! Simply drag and drop with your mouse or finger to move your favorite tools to the top.
+
+13. FULLY RESPONSIVE & DARK MODE
+    Works smoothly on Mobile, Tablets, and Desktops. Switch between Light and Dark mode for the perfect viewing experience.
+
+Website powered by 7yaTools - Productivity Reimagined.
+------------------------------------------------------
