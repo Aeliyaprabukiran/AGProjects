@@ -21,9 +21,9 @@ const RandomPicker = () => {
   const [names, setNames] = useState(() => {
     try {
       const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
-      return saved ? JSON.parse(saved) : ['Alice', 'Bob', 'Charlie', 'David', 'Eve', 'Frank'];
+      return saved ? JSON.parse(saved) : ['kiran', 'Vijay', 'Madhan', 'Aravind', 'Kishiv'];
     } catch {
-      return ['Alice', 'Bob', 'Charlie', 'David', 'Eve', 'Frank'];
+      return ['kiran', 'Vijay', 'Madhan', 'Aravind', 'Kishiv'];
     }
   });
 
