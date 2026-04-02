@@ -129,6 +129,19 @@
   letter-spacing: 1px;
 }
 
+.adsense-container {
+  width: 100%;
+  min-height: 250px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.sidebar-ad {
+  height: 100%;
+}
+
 /* Common UI Elements for Tools */
 .tool-header {
   margin-bottom: 32px;

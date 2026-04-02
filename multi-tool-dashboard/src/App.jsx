@@ -11,6 +11,7 @@ import ImageCompressor from './features/ImageCompressor';
 import JsonComparator from './features/JsonComparator';
 import DevNews from './features/DevNews';
 import RandomPicker from './features/RandomPicker';
+import AdSense from './components/AdSense';
 import './Features.css';
 import './App.css';
 
@@ -138,8 +139,16 @@ function App() {
       {/* Right Sidebar for Google Ads */}
       <aside className="ads-sidebar">
         <div className="ad-box glass-panel">
-          <p className="ad-placeholder">Google AdSense<br/>(300x600 px)</p>
-          {/* Insert Google AdSense <ins> tag here */}
+          {/* 
+            If you have a manual ad unit, replace the slot ID below.
+            For Auto Ads, the script in index.html index.html is enough.
+          */}
+          <AdSense 
+            adSlot="7ya-auto-ads" 
+            adFormat="auto" 
+            fullWidthResponsive={true} 
+            className="sidebar-ad"
+          />
         </div>
       </aside>
     </div>
