@@ -319,12 +319,7 @@
   }
   
   .ads-sidebar {
-    display: block;
-    width: 100%;
-    height: auto;
-    margin: 0;
-    padding: 12px;
-    border-top: 1px solid var(--surface-border);
+    display: none; /* Hide AdSense container on mobile to save space */
   }
 }
 
